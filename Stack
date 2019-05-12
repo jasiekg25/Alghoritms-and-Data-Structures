@@ -1,0 +1,50 @@
+        // STOS
+stack* new_stack(){
+
+    stack* new_stack = new stack;
+    new_stack->next = NULL;
+    return new_stack;
+}
+
+bool is_empty(stack* s){
+    return s==NULL;
+}
+
+void push(int value, stack* s){
+    if( is_empty(s)){
+        s = new_stack();
+        s->val = value;
+    }
+    else{
+        stack* top = new stack;
+        top->val = value;
+        top->next = s;
+        s = top;
+    }
+}
+
+int pop(stack* s){
+    int value;
+    stack tmp;
+    if ( is_empty(s) ){
+        return NULL;
+    }
+    else{
+        value = s->val;
+        tmp = s->next;
+        delete s;
+        s = tmp;
+    }
+    return value;
+}
+
+void delete_stack (stack* s) {
+
+    stack *tmp;
+    tmp = s;
+    while(s != NULL){
+        tmp = s->next;
+        delete s;
+        s = tmp;
+    }
+}
