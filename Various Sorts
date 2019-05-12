@@ -1,0 +1,184 @@
+// HEAP HEAP HEAP HEAP
+
+int head(int i) {
+    int k = (2 * i) + 1;
+    return k;
+}
+
+int root(int i){
+    int k = (2 * i) + 2;
+    return k;
+}
+
+int parent(int i){
+    int k = (i-1)/2;
+    return k;
+}
+
+void max_heapify(int array[], int heap_size, int i){
+
+    int largest;
+    int l = head(i);
+    int r = root(i);
+
+    if(l < heap_size and array[l] > array[i])
+        largest = l;
+    else
+        largest = i;
+
+
+    if(r < heap_size and array[r] > array[largest]){
+        largest = r;
+    }
+    if(largest != i){
+        int tmp = array[i];
+        array[i] = array[largest];
+        array[largest] = tmp;
+        max_heapify(array, heap_size, largest);
+    }
+}
+
+void build_heap(int array[], int n){
+    int heap_size = n;
+    for(int i = heap_size/2; i >= 0; i--){
+        max_heapify(array, heap_size, i);
+    }
+}
+
+void heap_sort (int array[], int n){
+    build_heap(array, n);
+    int tmp;
+    for(int i = n; i > 0; i--){
+        tmp = array[0];
+        array[0] = array[i];
+        array[i] = tmp;
+        n--;
+        max_heapify(array, n, 0);
+    }
+}
+
+
+
+
+// MergeSort
+void merge (int array[], int first, int middle, int last){
+    int n1 = middle - first + 1;
+    int n2 = last - middle;
+
+    int* left = new int[n1 + 1];
+    int* right = new int[n2 + 1];
+    for(int i = 0; i < n1; i++) left[i] = array[first + i];
+    for(int i = 0; i < n2; i++) right[i] = array[middle + 1 + i];
+    left[n1] = numeric_limits<int>::max();
+    right[n2] = numeric_limits<int>::max();
+    int l = 0;
+    int r = 0;
+    for(int k = first; k <= last; k++){
+        if(left[l] < right[r]){
+            array[k] = left[l];
+            l++;
+        }
+        else{
+            array[k] = right[r];
+            r++;
+        }
+    }
+    delete left;
+    delete right;
+
+}
+
+
+
+void merge_sort(int array[], int first, int last){
+
+    if(first < last){
+        int middle = (last + first)/2;
+        merge_sort(array, first, middle);
+        merge_sort(array, middle + 1, last);
+        merge(array, first, middle, last);
+    }
+
+}
+
+
+// QuickSort
+
+void quicksort (int array[], int first, int last){
+
+    if(first < last){
+        int middle = partition(array, first, last);
+        quicksort(array, first, middle - 1);
+        quicksort(array, middle + 1, last);
+    }
+
+}
+
+int partition(int array[], int first, int last){
+
+    int key = array[last];
+    int i = first -1 ;
+    for(int j = first; j < last; j++){
+        if(array[j] <= key){
+            int tmp = array[j];
+            i++;
+            array[j] = array[i];
+            array[i] = tmp;
+
+        }
+    }
+    array[last] = array[i+1];
+    array[i +1] = key;
+    return i+1 ;
+
+}
+
+int randomized_partition(int array[], int left, int right){
+
+    int k = Rand(left, right);
+    array[right] = array[k];
+    return partition(array, left, right);
+}
+
+
+void counting_sort(int array[], int size, int max_value){
+
+    int C[max_value + 1];
+    int array_reproduction[size];
+
+    filling_with_0(C, max_value + 1);
+    for(int i = 0; i < size; i++ )
+        C[array[i]] ++;
+
+    for(int i = 1; i < (max_value + 1); i++)
+        C[i] += C[i-1];
+    for(int i = size-1; i >= 0; i--){
+        C[array[i]] --;
+        array_reproduction[C[array[i]]] = array[i];
+
+    }
+
+    rewrite(array_reproduction, array, size);
+}
+
+void counting_sort_TurboBoost(int array[], int size, int exp) {
+    int array_reproduction[size];
+    int count[size];
+
+    filling_with_0(count, size);
+    for (int i = 0; i < size; i++)
+        count[(array[i] / exp) % size]++;
+    for (int i = 1; i < size; i++)
+        count[i] += count[i - 1];
+    for (int i = size - 1; i >= 0; i--) {
+        array_reproduction[count[(array[i] / exp) % size] -1] = array[i];
+        count[(array[i] / exp) % size]--;
+    }
+    print_array(array_reproduction, size);
+    rewrite(array_reproduction, array, size);
+}
+
+void sort_homework(int array[], int size){
+    counting_sort_TurboBoost(array, size, 1);
+    counting_sort_TurboBoost(array, size, size);
+}
