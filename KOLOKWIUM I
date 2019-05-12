@@ -1,0 +1,232 @@
+                //  KOLOKWIA KOLOKWIA KOLOKWIA
+        //  2017/2018
+    // ZADANIE 1
+// pierwsze zieloni, potem niebiescy
+
+int distance_to_ideal (node* head){   // 1 - niebiescy, 0 - zieloni
+    node* green = head;
+    node* blue = head;
+    node* tmp = head;
+    int counter = 0;
+    int current_green = 0;
+    int current_blue = 0;
+    int n = 0;
+
+    while(tmp != NULL){
+        n++;
+        tmp = tmp->next;
+    }
+    for(int i = 0; i <= (n / 2); i++){
+        blue = blue->next;
+    }
+    current_blue = (n / 2);
+    while(current_green < (n / 2)){
+        while(green->v != 1){
+            green = green->next;
+            current_green++;
+        }
+        while(blue->v != 0 and blue->next != NULL){
+            blue = blue->next;
+            current_blue ++;
+        }
+        if(green->v == 1 and blue->v == 0){
+            counter += (current_blue - current_green);
+        }
+    }
+
+}
+
+    // zadanie 2
+//tablica dwuwymiarowa, w każdym wierszu posortowane niemalejaca. Przepisz do tablicy jednowymiarowej posortowanej
+
+struct sequence{
+    int sum;
+    int start;
+};
+
+void swap_struct (sequence &A, sequence &B){
+    sequence tmp;
+    tmp = A;
+    A = B;
+    B = tmp;
+}
+
+int partition_struct(sequence array[], int left, int right){
+    int x = array[right].sum;
+    int i = left - 1;
+    for(int j = left; j < right; j++){
+        if(array[j].sum <= x){
+            i++;
+            swap_struct(array[i], array[j]);
+        }
+    }
+    swap_struct(array[i+1], array[right]);
+    return i;
+}
+
+void QuickSort_struct(sequence array[], int left, int right){
+    if(left < right){
+        int middle;
+        middle = partition_struct(array, left, right);
+        QuickSort_struct(array, left, middle);
+        QuickSort_struct(array, middle + 1, right);
+    }
+}
+
+int* sortNNsequence(int *A, int n ) {
+    sequence fragments[n];
+    int current = -1;
+    int result[(n*n)];
+
+    for (int j = 0; j < n; j++) {
+        current++;
+        fragments[j].start = current;
+        fragments[j].sum = 0;
+        for (int i = 0; i < n; i++) {
+            fragments[j].sum += A[current];
+            current++;
+        }
+    }
+
+    current = -1;
+    QuickSort_struct(fragments, 0, n-1);
+    for(int i = 0; i < n; i++){
+        current++;
+        for(int j = 0; j < n; j++){
+            result[current] = A[fragments[i].start + j];
+            current++;
+        }
+    }
+    delete A;
+    return result;
+
+}
+
+
+    // ZADANIE 3.
+// Lista z wartownikiem, rozkład jednostajny z przedziału <0,10)
+struct Node {
+    double value;
+    Node* next;
+};
+
+void insert_to_list(node* element, node* head){ // head - wskaźnik na posortowaną rosnąco
+    node* curr;
+    node* prev = NULL;
+    if(head == NULL) {
+        head = element;
+        return;
+    }
+    curr = head;
+    while(element->v > curr->v and curr != NULL){
+        prev = curr;
+        curr = curr->next;
+    }
+    prev->next = element;
+    element->next = curr;
+
+}
+
+        // 2016 / 2017
+    // Zadanie 2
+// Suma elementów, które w posortowanej byłyby pomiedzy indeksami "from" i "to" (wlacznie)
+
+int partition2(int array[], int left, int right){
+    if (left == right) return array[left];
+
+    int tmp;
+    int i = left -1;
+    int key = array[right];
+    for(int j = left; j <= right; j++){
+        if(array[j] < key){
+            i++;
+            tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
+    tmp = array[right];
+    array[right] = array[i + 1];
+    array[i +1] = tmp;
+
+    return i+1;
+
+}
+int Rand(int from, int to){
+
+    srand(time(NULL));
+    int scope = to - from + 1;
+    int k = ((rand() % scope) + from);
+    return k;
+}
+/*
+int randomized_partition(int array[], int left, int right){
+
+    int k = Rand(left, right);
+    array[right] = array[k];
+    return partition(array, left, right);
+}
+*/
+int selection(int array[], int left, int right, int index){
+    int middle;
+    int k;
+
+    if(left == right) return array[left];
+    middle = randomized_partition(array, left, right);
+    k = middle - left + 1;
+    if(index == k) return array[middle];
+    else if (index < k) return selection(array, left, middle - 1, index);
+    else if (index > k) return selection(array, middle + 1, right, index - k);
+}
+
+int SumBetween(int array[], int from, int to, int n){
+    int max = selection(array, 0, n-1, to);
+    int min = selection(array, 0, n-1, from);
+    int sum = 0;
+
+    for(int i = 0; i < n; i++)
+        if(array[i] <= max and array[i] >= min) sum += array[i];
+
+    return sum;
+
+}
+
+
+
+
+// 4.1
+    bool exist (int tab[], int n, int x){
+    int i = 0, j = n-1;
+    while(tab[i] + tab[j] != x && i < j)
+    {
+        if(tab[i] + tab[j] < x) i++;
+        else j--;
+    }if (tab[i]+ tab[j] == x) return true;
+    return false;
+}
+
+
+bool findMajority(int *tab, int n) {
+    int counter = 0, majority;
+    for (int i = 0; i < n; i++) {
+        if (counter == 0)
+            majority = i;
+        if (tab[i] == tab[majority])
+            counter++;
+        else
+            counter--;
+
+       // cout <<"Iteracja: "<<i <<"\t Counter: " <<counter <<"\t" << "Majority: "<< majority << "\t" <<"Wartosc od Majority: " << tab[majority] << endl;
+    }
+    counter = 0;
+    for (int i = 0; i < n; i++) {
+        if (tab[i] == tab[majority])
+            counter++;
+    }
+    if (counter > n / 2)
+        return true;
+    else
+        return false;
+}
+
+
