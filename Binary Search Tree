@@ -1,0 +1,191 @@
+        // BST
+struct bst {
+    bst* left;
+    bst* right;
+    bst* parent;
+    int val;
+};
+
+bst* new_BSTnode(int val){
+    bst* new_element = new bst;
+    new_element->right = new_element->left = new_element->parent = NULL;
+    new_element->val = val;
+    return new_element;
+}
+
+bst* insert_to_bst(bst* root, bst* element){
+
+
+    if(root == NULL)return element;
+    bst* curr = root;
+    bst* prev = NULL;
+
+    while(curr != NULL ){
+        prev = curr;
+        if(curr->val < element->val)
+            curr = curr->right;
+        else
+            curr = curr->left;
+    }
+
+    element->parent = prev;
+    if(prev->val < element->val)
+        prev->right = element;
+
+    else if(prev->val > element->val)
+        prev->left = element;
+
+    return root;
+}
+
+
+
+bst* create_bst (int array[], int size){
+
+    bst* root = NULL;
+    for(int i = 0; i < size; i++){
+        bst* element = new_BSTnode(array[i]);
+        root = insert_to_bst(root, element);
+    }
+    return root;
+}
+
+
+
+bst* bst_min (bst* root){ // zakładam że root nie jest nullem
+    bst* prev = NULL;
+    bst* curr = root;
+    while(curr != NULL){
+        prev = curr;
+        curr = curr->left;
+    }
+    return prev;
+}
+
+
+
+bst* bst_max (bst* root){ // root nie moze byc nulle
+    bst* prev = NULL;
+    bst* curr = root;
+
+    while(curr != NULL){
+        prev = curr;
+        curr = curr->right;
+    }
+    return prev;
+}
+
+bst* succesor(bst* element){ // sukcesor istnieje
+
+
+    bst* tmp = element->parent;
+
+
+    if(element->right != NULL){
+        return bst_min(element->right);
+    }
+    else {
+        while(tmp != NULL and tmp->right == element){
+            element = tmp;
+            tmp = tmp->parent;
+        }
+    }
+    return tmp;
+}
+
+bool is_value_in_bst (bst* root, int value){
+
+
+    bst* curr = root;
+    if(root == NULL) return false;
+    while(curr != NULL and curr->val != value){
+
+        if(curr->val < value) curr = curr->right;
+        else curr = curr->left;
+    }
+    return curr != NULL;
+}
+                                                                                                //Dokonczyc to, i usuwanie
+bst* find_element(bst* root, int value){
+
+    if(! is_value_in_bst(root, value)) return NULL;
+    if(root->val == value)return root;
+    if(root->val > value) return find_element(root->left, value);
+    else return find_element(root->right, value);
+
+}
+
+void print_bst_in_order (bst* root){
+
+    if(root != NULL){
+        if(root->left != NULL) print_bst_in_order(root->left);
+        cout << root->val << "\t";
+        if(root->right != NULL) print_bst_in_order(root->right);
+    }
+}
+
+bst* delete_value_from_bst(bst* root, int value){
+
+    bst* element_to_remove = find_element(root, value);
+    bst* tmp;
+    if(root == NULL) return root;
+
+    if(value < root->val)
+        root->left = delete_value_from_bst(root->left, value);
+    else if (value > root->val)
+        root->right = delete_value_from_bst(root->right, value);
+
+    else
+    {
+        if(root->left == NULL){
+            tmp = root->right;
+            delete(root);
+            return tmp;
+        }
+        else if(root->right == NULL){
+            tmp = root->left;
+            delete(root);
+            return tmp;
+        }
+
+        tmp = bst_min(root->right);
+        root->val = tmp->val;
+        root->right = delete_value_from_bst(root->right, tmp->val);
+    }
+    return root;
+}
+
+bst* merge_two_BST(bst* first, bst* second){
+
+    bst* root = NULL;
+    bst* first_tmp = bst_min(first);
+    bst* second_tmp = bst_min(second);
+    while(first_tmp != NULL and second_tmp != NULL){
+        if(first_tmp->val == second_tmp->val){
+            root = insert_to_bst(root, first_tmp);
+            first_tmp = succesor(first_tmp);
+            second_tmp = succesor(second_tmp);
+        }
+        else if(first_tmp->val < second_tmp->val){
+            root = insert_to_bst(root, first_tmp);
+            first_tmp = succesor(first_tmp);
+        }
+        else {
+            root = insert_to_bst(root,second_tmp);
+            second_tmp = succesor(second_tmp);
+        }
+    }
+    if(first_tmp == NULL){
+        while(second_tmp != NULL){
+            root = insert_to_bst(root, second_tmp);
+            second_tmp = succesor(second_tmp);
+        }
+    }
+    else {
+        while(first_tmp != NULL){
+            root = insert_to_bst(root, first_tmp);
+            first_tmp = succesor(first_tmp);
+        }
+    }
+}
+
