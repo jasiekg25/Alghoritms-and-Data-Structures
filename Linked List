@@ -1,0 +1,95 @@
+        // Double Linked List
+
+struct node {
+    node* next;
+    node* prev;
+    int v;
+}
+
+node* New_node(int value){
+    node* n_node = new node;
+    n_node->v = value;
+    n_node->prev = NULL;
+    n_node->next = NULL;
+    return n_node;
+}
+
+node* build_list(int array[], int n, node* head){
+    node* new_node;
+    node* tmp;
+
+
+    for(int i = 0; i < n; i++){
+        new_node = New_node(array[i]);
+        if(i == 0){
+            head = new_node;
+            new_node -> prev = head;
+            new_node -> next = head;
+        } else {
+            tmp = head -> prev;
+            tmp->next = new_node;
+            new_node -> next = head;
+            new_node->prev = tmp;
+            tmp = head;
+            tmp->prev = new_node;
+        }
+    }
+    return head;
+}
+
+node* last_from_list(node* head){
+    node* root;
+    node* tmp = head;
+    if(head == NULL) return NULL;
+
+    do{
+        root = tmp;
+        tmp = tmp->next;
+    } while(tmp != head);
+    return root;
+}
+
+
+void print_list (node* head){
+
+    if(head == NULL) {
+        cout << "Lista pusta" ;
+        return;
+    }
+    node* tmp = head;
+    do {
+        cout << head->v << "\t";
+        head = head->next;
+    } while(head != tmp);
+}
+
+void quicksort_list (node* head, node* root) {
+    if (root != NULL && head != root && head != root->next)
+    {
+        node* pivot = partition_list(head, root);
+        quicksort_list(head, pivot->prev);
+        quicksort_list(pivot->next, root);
+    }
+}
+
+node* partition_list(node* left, node* right){
+    int value = right->v;
+    node* i = NULL;
+
+    for(node* j = left; j != right; j = j->next){
+        if(j->v <= value ){
+            if(i == NULL) i = left;
+            else i = i->next;
+            int tmp = j->v;
+            j->v = i->v;
+            i->v = tmp;
+        }
+    }
+    if(i == NULL) i = left;
+    else i = i->next;
+    int tmp = right->v;
+    right->v = i->v;
+    i->v = tmp;
+    return i;
+}
+
