@@ -1,0 +1,53 @@
+        // Hash Tablice
+
+enum states {
+    occupied = 1,
+    empty = 2,
+    sth_was_here = 3
+};
+
+struct data {
+    string name;
+    string surname;
+    int phone_number;
+};
+
+struct hash_tab{
+    data D;
+    states state;
+};
+
+hash_tab* init_hash_tab(int size){
+    hash_tab* Tab = new hash_tab [size];
+    return Tab;
+}
+
+int hash_function(string text){
+    int key = 0;
+    for(int i = 0; text[i] != '\0'; i++){
+        key = 2137*key + text[i];
+    }
+    return key;
+}
+
+void add_to_hash_tab (data person, hash_tab Tab[], int tab_size) {
+    int index = hash_function(person.name);
+    index %= tab_size;
+    while (Tab[index].state == occupied and (index + 1) % tab_size != index) {
+        index = (index + 1)%tab_size;
+    }
+    if (Tab[index].state == occupied) cout << "Brak Miejsca w HashTablicy";
+    else {
+        Tab[index].D = person;
+        Tab[index].state = occupied;
+    }
+}
+
+data* remove_from_hash_tab(string name, hash_tab Tab[], int tab_size){
+    int index = hash_function(name) % tab_size;
+    while(Tab[index].state == occupied and Tab[index].D.name != name) {
+        index = (index + 1) % tab_size;
+    }
+    if(Tab[index].D.name == name) return &Tab[index].D;
+    else return NULL;
+}
